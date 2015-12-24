@@ -5,7 +5,8 @@ require_relative 'vagrant_rancheros_guest_plugin.rb'
 
 Vagrant.configure(2) do |config|
   config.vm.define "docker-root"
-
+  config.vm.network "private_network", ip: "192.168.20.20"
+  config.vm.hostname = "dev.myapp.com"
   #config.vm.box = "docker-root"
   config.vm.box = "ailispaw/docker-root"
 

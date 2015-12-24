@@ -9,7 +9,7 @@ docker run -d --name data-mysql -v /var/lib/mysql/ daocloud.io/koolay/mysql:late
 
 docker run --name mysql \
            --volumes-from data-mysql \
-           -p 3606:3606 \
+           -p 3306:3306 \
            -e MYSQL_ROOT_PASSWORD=dev \
            -e MYSQL_DATABASE=sentry \
            -d daocloud.io/koolay/mysql:latest
