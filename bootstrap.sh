@@ -1,9 +1,11 @@
 #!/bin/bash
 
 # Install Docker-Compose
+#docker ps | awk '{print $1}' | xargs docker stop
+#docker ps -a | awk '{print $1}' | xargs docker rm
 
-docker run -d --name data busybox -v /opt/data:/data -v /opt/data/log:/data/log echo "data-container"
-docker run -d --name data-mysql daocloud.io/koolay/mysql:latest -v /var/lib/mysql/ echo "data-mysql-container"
+docker run -d --name data -v /opt/data:/data -v /opt/data/log:/data/log busybox echo "data-container"
+docker run -d --name data-mysql -v /var/lib/mysql/ daocloud.io/koolay/mysql:latest echo "data-mysql-container"
 
 docker run --name mysql \
            --volumes-from data-mysql \
@@ -25,20 +27,19 @@ docker run --name fpm \
            --volumes-from data \
            --link mysql \
            --link redis \
-           -v /opt/docker/etc/php:/etc/php5 \
-           -v /opt/docker/app:/app \
-           --expose 9000 \
+           -v /opt/etc/php:/etc/php5 \
+           -v /opt/app:/app \
+           -p 9000:9000 \
            -e MYSQL_ROOT_PASSWORD=dev \
            -e MYSQL_DATABASE=sentry \
-           -d daocloud.io/koolay/mysql:latest
+           -d daocloud.io/koolay/php-fpm:latest
 
 
 docker run --name sentry \
            --volumes-from data \
            --link mysql \
            --link redis \
-           -v /opt/docker/etc/sentry.conf.py:/sentry.conf.py \
-           --expose 9898 \
+           -p 9898:9898 \
            -e C_FORCE_ROOT=true \
            -e SENTRY_DOCKER_DO_DB_CHECK=yes \
            -e SENTRY_URL_PREFIX=http://dev.myapp.com:9876 \
@@ -59,8 +60,8 @@ docker run --name nginx \
            --volumes-from data \
            --link fpm \
            --link sentry \
-           -v /opt/docker/etc/nginx:/etc/nginx \
-           -v /opt/docker/app:/app \
+           -v /opt/etc/nginx:/etc/nginx \
+           -v /opt/app:/app \
            -p 8080:8080 \
            -p 9876:9876 \
            -e MYSQL_ROOT_PASSWORD=dev \

@@ -6,10 +6,13 @@ require_relative 'vagrant_rancheros_guest_plugin.rb'
 Vagrant.configure(2) do |config|
   config.vm.define "docker-root"
 
-  config.vm.box = "docker-root"
+  #config.vm.box = "docker-root"
+  config.vm.box = "ailispaw/docker-root"
 
   config.vm.provision :shell, :path => "bootstrap.sh"
-  config.vm.synced_folder ".", "/opt/vagrant/"
+  config.vm.synced_folder "./docker/data", "/opt/data"
+  config.vm.synced_folder "./docker/app", "/opt/app"
+  config.vm.synced_folder "./docker/etc", "/opt/etc"
 
   # for NFS synced folder
   # config.vm.network "private_network", ip: "192.168.33.10"
