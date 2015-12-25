@@ -29,7 +29,7 @@ docker run --name fpm \
            --link redis \
            -v /opt/etc/php:/etc/php5 \
            -v /opt/app:/app \
-           -p 9000:9000 \
+           --expose 9000 \
            -e MYSQL_ROOT_PASSWORD=dev \
            -e MYSQL_DATABASE=sentry \
            -d daocloud.io/koolay/php-fpm:latest
@@ -39,10 +39,10 @@ docker run --name sentry \
            --volumes-from data \
            --link mysql \
            --link redis \
-           -p 9898:9898 \
+           --expose 9876 \
            -e C_FORCE_ROOT=true \
            -e SENTRY_DOCKER_DO_DB_CHECK=yes \
-           -e SENTRY_URL_PREFIX=http://dev.myapp.com:9876 \
+           -e SENTRY_URL_PREFIX=http://dev.myapp.com:8686 \
            -e SENTRY_ADMIN_USERNAME=admin \
            -e SENTRY_ADMIN_PASSWORD=dev \
            -e SENTRY_ADMIN_EMAIL=dev@foo.com \
@@ -63,6 +63,7 @@ docker run --name nginx \
            -v /opt/etc/nginx:/etc/nginx \
            -v /opt/app:/app \
            -p 8080:8080 \
+           -p 8686:8686 \
            -p 9876:9876 \
            -e MYSQL_ROOT_PASSWORD=dev \
            -e MYSQL_DATABASE=sentry \
