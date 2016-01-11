@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Install Docker-Compose
-#docker ps | awk '{print $1}' | xargs docker stop
-#docker ps -a | awk '{print $1}' | xargs docker rm
+docker ps | awk '{print $1}' | xargs docker stop
+docker ps -a | awk '{print $1}' | xargs docker rm
 
 docker run -d --name data -v /opt/data:/data -v /opt/data/log:/data/log busybox echo "data-container"
 docker run -d --name data-mysql -v /var/lib/mysql/ daocloud.io/koolay/mysql:latest echo "data-mysql-container"
@@ -27,7 +27,9 @@ docker run --name fpm \
            --volumes-from data \
            --link mysql \
            --link redis \
-           -v /opt/etc/php:/etc/php5 \
+           -v /opt/etc/php/fpm/php.ini:/etc/php5/fpm/php.ini \
+           -v /opt/etc/php/fpm/php-fpm.conf:/etc/php5/fpm/php-fpm.conf \
+           -v /opt/etc/php/fpm/pool.d/www.conf:/etc/php5/fpm/pool.d/www.conf \
            -v /opt/app:/app \
            --expose 9000 \
            -e MYSQL_ROOT_PASSWORD=dev \
@@ -65,6 +67,10 @@ docker run --name nginx \
            -p 8080:8080 \
            -p 8686:8686 \
            -p 9876:9876 \
+           -p 10083:10083 \
+           -p 10099:10099 \
+           -p 10085:10085 \
+           -p 10086:10086 \
            -e MYSQL_ROOT_PASSWORD=dev \
            -e MYSQL_DATABASE=sentry \
            -d daocloud.io/koolay/alpine-nginx:latest

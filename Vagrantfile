@@ -6,7 +6,6 @@ require_relative 'vagrant_rancheros_guest_plugin.rb'
 Vagrant.configure(2) do |config|
   config.vm.define "docker-root"
   config.vm.network "private_network", ip: "192.168.20.20"
-  config.vm.hostname = "dev.myapp.com"
   #config.vm.box = "docker-root"
   config.vm.box = "ailispaw/docker-root"
 
@@ -34,10 +33,14 @@ Vagrant.configure(2) do |config|
     sh.inline = "sntp -4sSc pool.ntp.org; date"
   end
 
+  config.vm.network :forwarded_port, guest: 10086, host: 10086
+  config.vm.network :forwarded_port, guest: 10083, host: 10083
+  config.vm.network :forwarded_port, guest: 10099, host: 10099
   config.vm.network :forwarded_port, guest: 8080, host: 8080
   config.vm.network :forwarded_port, guest: 8686, host: 8686
   config.vm.network :forwarded_port, guest: 9876, host: 9876
   config.vm.network :forwarded_port, guest: 6379, host: 6379
-  config.vm.network :forwarded_port, guest: 3306, host: 3306 
-  config.vm.network :forwarded_port, guest: 11211, host: 11211 
+  config.vm.network :forwarded_port, guest: 3306, host: 3306
+
+  config.vm.network :forwarded_port, guest: 11211, host: 11211
 end
