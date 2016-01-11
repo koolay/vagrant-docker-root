@@ -1,3 +1,5 @@
 .vagrant/
 docker/
+docker/etc/nginx/sites-enabled/
+docker/etc/nginx/sites-available/
 dev-workspace/
