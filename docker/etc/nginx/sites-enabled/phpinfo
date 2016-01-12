@@ -1,7 +1,7 @@
 
 server {
-    listen   8080;
-    server_name phpinfo;
+    listen   80;
+    server_name info-dev.myysq.com.cn;
     root /app/www/phpinfo;
     index  index.html index.htm index.php;
 

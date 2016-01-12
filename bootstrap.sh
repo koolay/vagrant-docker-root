@@ -32,6 +32,7 @@ docker run --name fpm \
            --link mysql \
            --link memcached \
            --link redis \
+           --add-host info-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
            --add-host wx-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
            --add-host passport-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
            --add-host mem-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
