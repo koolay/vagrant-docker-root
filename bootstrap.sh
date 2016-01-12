@@ -33,6 +33,7 @@ docker run --name fpm \
            --link memcached \
            --link redis \
            --add-host info-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
+           --add-host api-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
            --add-host wx-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
            --add-host passport-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
            --add-host mem-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
@@ -78,13 +79,7 @@ docker run --name nginx \
            -v /opt/etc/nginx:/etc/nginx \
            -v /opt/app:/app \
            -p 80:80 \
-           -p 8080:8080 \
            -p 8686:8686 \
-           -p 9876:9876 \
-           -p 10083:10083 \
-           -p 10099:10099 \
-           -p 10085:10085 \
-           -p 10086:10086 \
            -e MYSQL_ROOT_PASSWORD=dev \
            -e MYSQL_DATABASE=sentry \
            -d daocloud.io/koolay/alpine-nginx:latest
