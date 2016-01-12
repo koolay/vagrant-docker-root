@@ -33,6 +33,7 @@ Vagrant.configure(2) do |config|
     sh.inline = "sntp -4sSc pool.ntp.org; date"
   end
 
+  config.vm.network :forwarded_port, guest: 80, host: 80
   config.vm.network :forwarded_port, guest: 10086, host: 10086
   config.vm.network :forwarded_port, guest: 10083, host: 10083
   config.vm.network :forwarded_port, guest: 10099, host: 10099

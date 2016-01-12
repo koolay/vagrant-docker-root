@@ -1,13 +1,14 @@
 #!/bin/bash
 
 # Install Docker-Compose
-docker ps | awk '{print $1}' | xargs docker stop
-docker ps -a | awk '{print $1}' | xargs docker rm
+docker ps | grep -v data | awk '{print $1}' | grep -v CONTAINER | xargs docker stop
+docker ps -a | grep -v data | awk '{print $1}' | grep -v CONTAINER | xargs docker rm
 
 docker run -d --name data -v /opt/data:/data -v /opt/data/log:/data/log busybox echo "data-container"
 docker run -d --name data-mysql -v /var/lib/mysql/ daocloud.io/koolay/mysql:latest echo "data-mysql-container"
 
 docker run --name mysql \
+           --restart=always \
            --volumes-from data-mysql \
            -p 3306:3306 \
            -e MYSQL_ROOT_PASSWORD=dev \
@@ -15,19 +16,28 @@ docker run --name mysql \
            -d daocloud.io/koolay/mysql:latest
 
 docker run --name memcached \
+           --restart=always \
            -p 11211:11211 \
            -d daocloud.io/koolay/memcached:latest
 
 docker run --name redis \
+           --restart=always \
            -p 6379:6379\
            -d daocloud.io/koolay/alpine-redis:latest
 
 
 docker run --name fpm \
+           --restart=always \
            --volumes-from data \
            --link mysql \
+           --link memcached \
            --link redis \
-           -v /opt/etc/php/fpm/php.ini:/etc/php5/fpm/php.ini \
+           --add-host wx-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
+           --add-host passport-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
+           --add-host mem-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
+           --add-host msg-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
+           --add-host yf-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
+           --add-host kefu-dev.myysq.com.cn:`/sbin/ip route|awk '/default/ { print  $3}'` \
            -v /opt/etc/php/fpm/php-fpm.conf:/etc/php5/fpm/php-fpm.conf \
            -v /opt/etc/php/fpm/pool.d/www.conf:/etc/php5/fpm/pool.d/www.conf \
            -v /opt/app:/app \
@@ -38,6 +48,7 @@ docker run --name fpm \
 
 
 docker run --name sentry \
+           --restart=always \
            --volumes-from data \
            --link mysql \
            --link redis \
@@ -59,11 +70,13 @@ docker run --name sentry \
 
 
 docker run --name nginx \
+           --restart=always \
            --volumes-from data \
            --link fpm \
            --link sentry \
            -v /opt/etc/nginx:/etc/nginx \
            -v /opt/app:/app \
+           -p 80:80 \
            -p 8080:8080 \
            -p 8686:8686 \
            -p 9876:9876 \
